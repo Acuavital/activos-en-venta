@@ -6,6 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: activos-en-venta:1.0.0
+    pull_policy: build
     container_name: activos_en_venta
     restart: unless-stopped
     ports:

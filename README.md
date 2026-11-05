@@ -43,7 +43,11 @@ Subir código a GitHub no reconstruye por sí solo el contenedor que ya esté ej
 docker compose up -d --build
 ```
 
-En Portainer, actualice el stack desde `main` y reconstruya la imagen. La vinculación `build` se añadió porque la configuración anterior lanzaba la imagen genérica de Nginx sin copiar la web. El puerto 8085 y el nombre del contenedor se mantienen. No se agregan bases de datos, redes externas o proxies supuestos.
+En Portainer, abra el stack de Git, seleccione **Pull and redeploy** para actualizar desde `main` y deje **desactivado Re-pull image and redeploy**. Esa opción adicional fuerza a Docker a descargar imágenes de un registro: `activos-en-venta:1.0.0` es una etiqueta construida localmente, no una imagen publicada en Docker Hub. Un error de pull de ese nombre no se resuelve con docker login a una imagen inexistente en el registro.
+
+El servicio declara `pull_policy: build`: Docker Compose con soporte de construcción debe construir y reconstruir la imagen desde el Dockerfile y `html/`, aunque ya exista una versión local. Un redeploy que reutiliza la imagen anterior sin construir no incorpora los cambios del repositorio. La política no evita necesariamente un pull separado forzado por la opción de Portainer; por eso debe quedar desactivada.
+
+La vinculación `build` se añadió porque la configuración anterior lanzaba Nginx genérico sin copiar la web. El puerto 8085 y el nombre del contenedor se mantienen. No se agregan bases de datos, redes externas o proxies supuestos.
 
 **Swarm no construye imágenes desde `build` de Compose:** si se utiliza Swarm, construya la imagen y distribúyala en un registro accesible a los nodos antes de actualizar el stack. Si el flujo de Portainer no admite construir el contexto Git, use el comando anterior en el host o un proceso de construcción acordado; no sustituya la copia de la web por la imagen genérica de Nginx.
 
