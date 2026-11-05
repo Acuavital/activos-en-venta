@@ -2,7 +2,7 @@
 
 Catálogo público con landing y cinco fichas estáticas, imágenes reales, carruseles, enlaces de detalles y contacto por WhatsApp. Sin backend, usuarios, panel de administración ni base de datos.
 
-Origen público configurado: **http://217.216.86.58:8085/**. El sitio se sirve en la raíz de ese origen. La conexión actual es HTTP; cuando se habilite HTTPS o un dominio, cambie el origen y reconstruya para actualizar canonical, Open Graph, imágenes absolutas y sitemap.
+Origen público configurado: **https://activosenventa.com/**. El sitio se sirve en la raíz de ese dominio HTTPS. Canonical, Open Graph, imágenes absolutas, sitemap y enlaces compartidos se generan con este origen. El proxy público y su certificado se administran en el servidor; el puerto interno del stack permanece en 8085.
 
 ## Estructura
 
@@ -30,7 +30,7 @@ Edite `src/data/products.ts` y los medios públicos aprobados para modificar, a�
 El origen predeterminado está en `astro.config.mjs`; puede sobreescribirse durante la compilación:
 
 ```sh
-PUBLIC_SITE_ORIGIN="http://217.216.86.58:8085" pnpm build:public
+PUBLIC_SITE_ORIGIN="https://activosenventa.com" pnpm build:public
 ```
 
 En PowerShell, establezca `$env:PUBLIC_SITE_ORIGIN` antes del comando. El origen es una configuración de compilación: no añadirlo al arranque de Nginx esperando que cambie el HTML ya generado.

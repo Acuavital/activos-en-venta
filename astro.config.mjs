@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 
-const origin = process.env.PUBLIC_SITE_ORIGIN?.trim() || 'http://217.216.86.58:8085';
+const origin = process.env.PUBLIC_SITE_ORIGIN?.trim() || 'https://activosenventa.com';
 const parsedOrigin = new URL(origin);
 if (!['http:', 'https:'].includes(parsedOrigin.protocol) || parsedOrigin.username || parsedOrigin.password || parsedOrigin.pathname !== '/' || parsedOrigin.search || parsedOrigin.hash) {
   throw new Error('PUBLIC_SITE_ORIGIN debe ser el origen público, sin credenciales, rutas, consulta o fragmento.');
