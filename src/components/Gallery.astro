@@ -1,0 +1,19 @@
+---
+import Icon from './Icon.astro';
+import Carousel from './Carousel.astro';
+import type { Product } from '../data/products';
+interface Props { product: Product; }
+const { product: p } = Astro.props;
+---
+<section class="gallery-section" id="galeria" aria-labelledby="gallery-title">
+  <div class="section-heading">
+    <div><p class="eyebrow">CONOZCA EL ACTIVO</p><h2 id="gallery-title">Una mirada más cerca.</h2></div>
+    <span class="small-label">{p.images.length} imágenes · deslice o use las flechas</span>
+  </div>
+  {p.imageNote && <p class="gallery-note"><Icon name="check" size={18}/>{p.imageNote}</p>}
+  <Carousel images={p.images} label={`Galería de ${p.shortTitle}`} variant="gallery" />
+  {p.video && <div class="video-block">
+    <div class="video-label"><Icon name="play"/><div><h3>El camión, en video.</h3><p>Video real · sin pista de audio</p></div></div>
+    <video src={p.video} controls playsinline muted preload="metadata" poster={p.images[0].src} aria-label="Video del camión sin audio"></video>
+  </div>}
+</section>

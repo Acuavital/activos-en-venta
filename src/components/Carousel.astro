@@ -1,0 +1,131 @@
+---
+import Icon from './Icon.astro';
+import type { Media } from '../data/products';
+
+interface Props {
+  images: Media[];
+  label: string;
+  variant?: 'hero' | 'card' | 'detail' | 'gallery' | 'editorial';
+  eager?: boolean;
+  category?: string;
+  showCaptions?: boolean;
+  href?: string;
+  linkLabel?: string;
+}
+
+const {
+  images,
+  label,
+  variant = 'detail',
+  eager = false,
+  category,
+  showCaptions = true,
+  href,
+  linkLabel = 'Ver detalles del activo',
+} = Astro.props;
+
+const count = images.length;
+const initialCaption = images[0]?.caption || images[0]?.alt || '';
+---
+
+<section
+  class={`media-carousel media-carousel--${variant}`}
+  data-carousel
+  role="region"
+  aria-roledescription="carrusel"
+  aria-label={label}
+>
+  {category && <p class="carousel-category">{category}</p>}
+
+  <div class="carousel-track" data-carousel-track tabindex="0">
+    {images.map((image, index) => (
+      <figure
+        class="carousel-slide"
+        data-carousel-slide
+        data-caption={image.caption || image.alt}
+        role="group"
+        aria-roledescription="diapositiva"
+        aria-label={`${index + 1} de ${count}`}
+      >
+        {href ? (
+          <a
+            href={href}
+            class="carousel-image-link"
+            data-carousel-link
+            aria-label={linkLabel}
+            tabindex={index === 0 ? 0 : -1}
+            draggable="false"
+          >
+            <img
+              src={image.src}
+              alt={image.alt}
+              width="1280"
+              height="960"
+              loading={eager && index === 0 ? 'eager' : 'lazy'}
+              fetchpriority={eager && index === 0 ? 'high' : undefined}
+              decoding="async"
+              draggable="false"
+            />
+          </a>
+        ) : (
+          <img
+            src={image.src}
+            alt={image.alt}
+            width="1280"
+            height="960"
+            loading={eager && index === 0 ? 'eager' : 'lazy'}
+            fetchpriority={eager && index === 0 ? 'high' : undefined}
+            decoding="async"
+          />
+        )}
+      </figure>
+    ))}
+  </div>
+
+  <div class="carousel-controls" role="group" aria-label="Controles del carrusel">
+    <button
+      type="button"
+      class="carousel-arrow carousel-arrow--prev"
+      data-carousel-prev
+      aria-label="Anterior fotografía"
+      disabled={count <= 1}
+    >
+      <Icon name="prev" size={20} />
+    </button>
+
+    <div class="carousel-dots" role="group" aria-label="Elegir fotografía">
+      {count > 1 && images.map((_, index) => (
+        <button
+          type="button"
+          class="carousel-dot"
+          data-carousel-dot={index}
+          aria-label={`Ver imagen ${index + 1}`}
+          aria-current={index === 0 ? 'true' : 'false'}
+          aria-pressed={index === 0 ? 'true' : 'false'}
+        />
+      ))}
+    </div>
+
+    <span class="carousel-count" data-carousel-count aria-live="polite" aria-atomic="true">
+      {count ? 1 : 0} / {count}
+    </span>
+
+    <button
+      type="button"
+      class="carousel-arrow carousel-arrow--next"
+      data-carousel-next
+      aria-label="Siguiente fotografía"
+      disabled={count <= 1}
+    >
+      <Icon name="next" size={20} />
+    </button>
+  </div>
+
+  {showCaptions && (
+    <p class="carousel-caption" data-carousel-caption>{initialCaption}</p>
+  )}
+
+  <noscript>
+    <p class="carousel-hint">Deslice horizontalmente las fotografías o enfoque el recuadro y use las flechas del teclado.</p>
+  </noscript>
+</section>

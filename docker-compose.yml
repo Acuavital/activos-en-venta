@@ -2,7 +2,10 @@ version: '3.8'
 
 services:
   web:
-    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: activos-en-venta:1.0.0
     container_name: activos_en_venta
     restart: unless-stopped
     ports:
