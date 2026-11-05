@@ -4,6 +4,7 @@ import Carousel from './Carousel.astro';
 import { initialWhatsApp, productPath, money, type Product } from '../data/products';
 interface Props { product: Product; number?: number; compact?: boolean; }
 const { product: p, number = 1, compact = false } = Astro.props;
+const origin = import.meta.env.PUBLIC_SITE_ORIGIN?.trim() || '';
 ---
 <article class:list={['product-card', { compact }]} data-product-card data-category={p.category}>
   <Carousel images={p.images} label={`Imágenes de ${p.shortTitle}`} variant="card" category={p.category} href={productPath(p)} linkLabel={`Ver detalles de ${p.shortTitle}`} />
@@ -17,7 +18,7 @@ const { product: p, number = 1, compact = false } = Astro.props;
     {p.secondaryOption && <p class="secondary-price">Tanque solo: {money(p.secondaryOption.price)}</p>}
     <div class="card-links">
       <a href={productPath(p)} class="text-link">Ver detalles <Icon name="arrow" size={18}/></a>
-      <a data-whatsapp data-product-id={p.id} href={initialWhatsApp(p)} target="_blank" rel="noopener noreferrer" class="card-wa" aria-label={`Consultar ${p.shortTitle} por WhatsApp`}><Icon name="whatsapp"/></a>
+      <a data-whatsapp data-product-id={p.id} href={initialWhatsApp(p, undefined, origin)} target="_blank" rel="noopener noreferrer" class="card-wa" aria-label={`Consultar ${p.shortTitle} por WhatsApp`}><Icon name="whatsapp"/></a>
       <button type="button" data-share data-product-id={p.id} class="icon-button" aria-label={`Compartir ${p.shortTitle}`}><Icon name="share" size={20}/></button>
     </div>
   </div>

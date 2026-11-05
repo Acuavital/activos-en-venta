@@ -1,4 +1,4 @@
-import { products, phone, money, productPath } from '../data/products';
+import { products, phone, money, productPath, contactMessage } from '../data/products';
 import { setupCarousels } from './carousel';
 
 /** Progressive enhancement only: the server-rendered links remain usable without JS. */
@@ -205,16 +205,8 @@ function priceLabel(price: number | null): string {
 }
 
 function whatsappText(interest: Interest | null): string {
-  const product = interest ? productById.get(interest.id) : undefined;
-  if (!product) {
-    return `Hola, me interesan los activos en venta. Quisiera más información sobre disponibilidad, precios y ubicación. ${siteUrl()}`;
-  }
-  const option = product.options.find((item) => item.id === interest?.option);
-  const selection = option ? ` — ${option.label}` : '';
-  const location = product.location ? ` Ubicación: ${product.location}.` : '';
-  const suffix = text(product.raw.priceSuffix);
-  const included = product.id === 'fundo' ? ' Planta y transformador incluidos; camión y rebaño no incluidos.' : '';
-  return `Hola, me interesa ${product.name}${selection}. Precio: ${priceLabel(option?.price ?? product.price)}${suffix ? ` ${suffix}` : ''}.${location}${included} Quisiera más información y coordinar una visita o inspección. ${siteUrl(product)}`;
+  const record = interest ? products.find((item) => item.id === interest.id) : undefined;
+  return contactMessage(record, interest?.option, publicOrigin() || undefined);
 }
 
 function updateWhatsapp(anchor: HTMLAnchorElement): void {

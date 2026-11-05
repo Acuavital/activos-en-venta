@@ -580,33 +580,23 @@ export function productPath(p: Product): string {
   return `/activos/${p.slug}/`;
 }
 
-/** Abre un borrador editable: el interesado debe enviar el mensaje en WhatsApp. */
-export function initialWhatsApp(p?: Product, option?: string, origin?: string): string {
-  const secondary = p?.secondaryOption;
-  const selectedOption = secondary && option === secondary.id ? secondary : undefined;
-  let message: string;
+/** Consulta breve compartida entre HTML estático y actualización del interés visitado. */
+export function contactMessage(p?: Product, option?: string, origin?: string): string {
+  const names: Record<string, string> = {
+    fundo: 'Fundo agrícola y ganadero',
+    camion: 'Camión lechero con tanque',
+    planta: 'Planta Caterpillar',
+    transformador: 'Transformador',
+    local: 'Local comercial',
+  };
+  const selectedTank = p?.id === 'camion' && Boolean(p.secondaryOption && p.secondaryOption.id === option);
+  const name = p ? (selectedTank ? 'Tanque lechero' : names[p.id] || p.title) : undefined;
+  const lines = [
+    name ? `Hola, me interesa *${name}*.` : 'Hola, me interesan los activos en venta.',
+    'Quisiera más información sobre disponibilidad, precios y ubicación.',
+  ];
 
-  if (p && selectedOption) {
-    message =
-      `Hola, me interesa ${selectedOption.label.toLocaleLowerCase('es')}` +
-      ` de la oferta «${p.title}», anunciado en ${money(selectedOption.price)}.` +
-      ` Ubicación: ${p.location}. ${selectedOption.detail}` +
-      ' Quisiera conocer los detalles y coordinar una inspección.';
-  } else if (p) {
-    const suffix = p.priceSuffix ? ` ${p.priceSuffix}` : '';
-    const condition = p.conditions[0] ? ` ${p.conditions[0]}` : '';
-    message =
-      `Hola, me interesa ${p.title}, anunciado en ${money(p.price)}${suffix}.` +
-      ` Ubicación: ${p.location}.${condition}` +
-      ' Quisiera conocer los detalles y coordinar una visita o inspección.';
-  } else {
-    message =
-      'Hola, me interesa el catálogo de activos en venta.' +
-      ' Quisiera conocer las ofertas disponibles y sus condiciones.';
-  }
-
-  // Solo incorpora una URL cuando el llamador proporciona un origen público válido.
-  // No se utiliza ningún dominio de ejemplo ni se presupone una URL de publicación.
+  // El origen es explícito: no se inventa un dominio ni se toma de datos privados.
   if (origin?.trim()) {
     try {
       const suppliedOrigin = new URL(origin.trim());
@@ -616,12 +606,17 @@ export function initialWhatsApp(p?: Product, option?: string, origin?: string): 
         !suppliedOrigin.password
       ) {
         const publicUrl = new URL(p ? productPath(p) : '/', suppliedOrigin.origin);
-        message += `\n\n${p ? 'Ficha' : 'Catálogo'}: ${publicUrl.href}`;
+        lines.push(publicUrl.href);
       }
     } catch {
       // Un origen ausente o inválido deja la consulta funcional, sin URL inventada.
     }
   }
 
-  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  return lines.join('\n');
+}
+
+/** Abre un borrador editable: el interesado debe enviar el mensaje en WhatsApp. */
+export function initialWhatsApp(p?: Product, option?: string, origin?: string): string {
+  return `https://wa.me/${phone}?text=${encodeURIComponent(contactMessage(p, option, origin))}`;
 }
