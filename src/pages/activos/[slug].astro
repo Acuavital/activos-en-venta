@@ -8,44 +8,53 @@ import { products, initialWhatsApp, money, type Product } from '../../data/produ
 export function getStaticPaths() { return products.map(product => ({params:{slug:product.slug},props:{product}})); }
 interface Props { product: Product; }
 const { product: p } = Astro.props;
-const primarySections = p.campaignHeading ? p.sections : [];
-const secondarySections = p.campaignHeading ? [] : p.sections;
 const others = products.filter(other=>other.id!==p.id).slice(0,3);
 const origin = import.meta.env.PUBLIC_SITE_ORIGIN?.trim() || '';
+const whatsapp = initialWhatsApp(p, undefined, origin);
 ---
 <BaseLayout title={`${p.shortTitle} · ${p.priceLabel} | Activos en venta`} description={p.shareDescription} image={p.images[0].src} productId={p.id}>
-  <div class="detail-top section-wrap"><a href="/#catalogo" class="back-link"><Icon name="prev" size={18}/> Todas las ofertas</a><span>{p.category} <span class="breadcrumb-dot">/</span> {p.shortTitle}</span></div>
+  <div class="detail-top section-wrap"><a href="/#catalogo" class="back-link"><Icon name="prev" size={16}/> Todos los activos</a></div>
   <section class="detail-hero section-wrap">
-    <div class="detail-photo">
+    <div class="detail-media">
       <Carousel images={p.images} label={`Imágenes de ${p.shortTitle}`} variant="detail" eager />
-      {p.imageNote && <p class="detail-photo-note">{p.imageNote}</p>}
+      {p.imageNote && <p class="detail-note">{p.imageNote}</p>}
     </div>
-    <div class="detail-intro">
-      <p class="eyebrow">{p.eyebrow}</p><h1>{p.title}</h1>
-      <p class="detail-location"><Icon name="location" size={20}/>{p.location}</p>
-      <p class="detail-tagline">{p.tagline}</p><p class="detail-summary">{p.summary}</p>
-      <div class="detail-price"><span class="small-label" data-current-option>{p.secondaryOption?'CAMIÓN + TANQUE':'PRECIO DE VENTA'}</span><strong data-current-price>{p.priceLabel}</strong>{p.priceSuffix && <span class="price-suffix">{p.priceSuffix}</span>}</div>
-      {p.secondaryOption && <div class="option-selector" aria-label="Seleccione qué le interesa">
+    <div class="buy-box">
+      <p class="buy-category">{p.category} · {p.eyebrow}</p>
+      <h1>{p.title}</h1>
+      <p class="buy-location"><Icon name="location" size={16}/>{p.location}</p>
+      <div class="buy-price">
+        <span class="buy-label" data-current-option>{p.secondaryOption?'Camión + tanque':'Precio de venta'}</span>
+        <strong data-current-price>{p.priceLabel}</strong>{p.priceSuffix && <span class="buy-suffix">{p.priceSuffix}</span>}
+      </div>
+      {p.secondaryOption && <div class="option-selector" role="group" aria-label="Seleccione qué le interesa">
         <button type="button" data-option-id="conjunto" data-product-id={p.id} aria-pressed="true">Camión + tanque <span>{p.priceLabel}</span></button>
         <button type="button" data-option-id={p.secondaryOption.id} data-product-id={p.id} aria-pressed="false">{p.secondaryOption.label} <span>{money(p.secondaryOption.price)}</span></button>
       </div>}
-      <div class="detail-actions">
-        <a data-whatsapp data-product-id={p.id} href={initialWhatsApp(p, undefined, origin)} target="_blank" rel="noopener noreferrer" class="button button-primary"><Icon name="whatsapp"/> Consultar por WhatsApp <Icon name="arrow" size={20}/></a>
-        <div class="secondary-actions"><button type="button" data-share data-product-id={p.id} class="text-link"><Icon name="share" size={18}/> Compartir ficha</button><button type="button" data-copy-link data-product-id={p.id} class="text-link"><Icon name="copy" size={18}/> Copiar enlace</button></div>
-      </div>
+      <a data-whatsapp data-product-id={p.id} href={whatsapp} target="_blank" rel="noopener noreferrer" class="button button-primary button-block"><Icon name="whatsapp"/> Consultar por WhatsApp</a>
+      <div class="buy-secondary"><button type="button" data-share data-product-id={p.id} class="text-button"><Icon name="share" size={16}/> Compartir</button><button type="button" data-copy-link data-product-id={p.id} class="text-button"><Icon name="copy" size={16}/> Copiar enlace</button></div>
+      <dl class="buy-highlights">{p.highlights.map(h=><div><dt>{h.label}</dt><dd>{h.value}</dd></div>)}</dl>
     </div>
   </section>
-  <div class="detail-highlights section-wrap">{p.highlights.map(h=><div><strong>{h.value}</strong><span>{h.label}</span></div>)}</div>
   <div class="detail-body section-wrap">
     <div class="detail-content">
-      <section class="description-section"><p class="eyebrow">EL VALOR DE LA COMPRA</p>{p.campaignHeading ? <h2>{p.campaignHeading}</h2> : <h2>Lo que hace<br/><em>diferente esta oferta.</em></h2>}{p.description.map(text=><p>{text}</p>)}</section>
-      {primarySections.map(section=><section class="information-block"><h3>{section.title}</h3><p>{section.body}</p>{section.bullets && <ul>{section.bullets.map(b=><li>{b}</li>)}</ul>}</section>)}
-      <section class="specification-section" id="caracteristicas"><div class="section-heading"><div><p class="eyebrow">LOS DETALLES</p><h2>Características.</h2></div></div><dl class="spec-list">{p.specs.map(spec=><div><dt>{spec.label}</dt><dd>{spec.value}</dd></div>)}</dl></section>
-      {secondarySections.map(section=><section class="information-block"><h3>{section.title}</h3><p>{section.body}</p>{section.bullets && <ul>{section.bullets.map(b=><li>{b}</li>)}</ul>}</section>)}
-      {p.campaignHeading && <div class="information-block"><a data-whatsapp data-product-id={p.id} href={initialWhatsApp(p, undefined, origin)} target="_blank" rel="noopener noreferrer" class="button button-primary"><Icon name="whatsapp"/> Solicitar información y coordinar visita <Icon name="arrow" size={20}/></a></div>}
+      <section class="detail-block">
+        <h2>Descripción</h2>
+        <p class="lead">{p.summary}</p>
+        {p.description.map(text=><p>{text}</p>)}
+      </section>
+      {p.sections.map(section=><section class="detail-block"><h3>{section.title}</h3><p>{section.body}</p>{section.bullets && <ul>{section.bullets.map(b=><li>{b}</li>)}</ul>}</section>)}
+      <section class="detail-block" id="caracteristicas"><h2>Características</h2><dl class="spec-list">{p.specs.map(spec=><div><dt>{spec.label}</dt><dd>{spec.value}</dd></div>)}</dl></section>
+      <Gallery product={p}/>
     </div>
-    <aside class="conditions-panel"><p class="eyebrow">ANTES DE DECIDIR</p><h3>Una compra<br/>con los detalles claros.</h3><ul>{p.conditions.map(c=><li><Icon name="check" size={18}/><span>{c}</span></li>)}</ul><p class="conditions-footer">Coordine una visita y confirme las condiciones directamente con el vendedor.</p><a data-whatsapp data-product-id={p.id} href={initialWhatsApp(p, undefined, origin)} target="_blank" rel="noopener noreferrer" class="text-link">Coordinar una visita <Icon name="arrow" size={20}/></a></aside>
+    <aside class="conditions">
+      <h2>Condiciones</h2>
+      <ul>{p.conditions.map(c=><li><Icon name="check" size={16}/><span>{c}</span></li>)}</ul>
+      <a data-whatsapp data-product-id={p.id} href={whatsapp} target="_blank" rel="noopener noreferrer" class="button button-ghost button-block">Coordinar una visita</a>
+    </aside>
   </div>
-  <div class="section-wrap"><Gallery product={p}/></div>
-  <section class="other-section section-wrap"><div class="section-heading"><div><p class="eyebrow">SIGA EXPLORANDO</p><h2>Otros activos, otros proyectos.</h2></div><a href="/#catalogo" class="text-link">Ver el catálogo <Icon name="arrow" size={20}/></a></div><div class="other-grid">{others.map(other=><ProductCard product={other} number={products.findIndex(x=>x.id===other.id)+1} compact/>)}</div></section>
+  <section class="others section-wrap" aria-labelledby="others-title">
+    <div class="others-head"><h2 id="others-title">Otros activos en venta</h2><a href="/#catalogo" class="text-button">Ver todos <Icon name="arrow" size={16}/></a></div>
+    <div class="catalog-grid">{others.map(other=><ProductCard product={other}/>)}</div>
+  </section>
 </BaseLayout>
