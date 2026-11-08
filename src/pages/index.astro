@@ -1,12 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProductCard from '../components/ProductCard.astro';
-import Carousel from '../components/Carousel.astro';
-import Icon from '../components/Icon.astro';
-import { products, productPath } from '../data/products';
-const farm = products[0];
+import { products } from '../data/products';
 const categories = [
-  {label:'Todos los activos',value:'todos'},
+  {label:'Todos',value:'todos'},
   {label:'Campo',value:'Campo'},
   {label:'Transporte',value:'Transporte'},
   {label:'Energía',value:'Energía'},
@@ -14,49 +11,15 @@ const categories = [
 ];
 ---
 <BaseLayout>
-  <section class="home-hero">
-    <div class="hero-copy">
-      <div class="hero-overline"><span class="status-dot"></span><span>CAMPO · TRANSPORTE · ENERGÍA · INMUEBLES</span></div>
-      <h1>Bienes para<br/>dar el <em>siguiente</em><br/>paso.</h1>
-      <p class="hero-lead">Encuentre el activo que encaja con su próximo proyecto. Explore cada oferta y conozca lo que hace valiosa su compra.</p>
-      <a href="#catalogo" class="button button-primary">Explore las ofertas <Icon name="diagonal" size={20}/></a>
-      <div class="hero-footnote"><span class="hero-count">{String(products.length).padStart(2,'0')}</span><div><strong>Ofertas para distintos proyectos</strong><span>Imágenes reales. Información clara. Contacto directo.</span></div></div>
-    </div>
-    <div class="hero-visual">
-      <Carousel images={farm.images} label="Imágenes del fundo: mapa, taller y actividad ganadera" variant="hero" eager href={productPath(farm)} linkLabel={`Ver detalles de ${farm.shortTitle}`} />
-      <a href={productPath(farm)} class="hero-feature-note">
-        <div><span class="eyebrow">{farm.campaignHeading ? 'HATO EN VENTA EN EL ZULIA' : 'OFERTA DESTACADA'}</span><h2>Un fundo.<br/>Muchas posibilidades.</h2><p>1.500 ha declaradas · {farm.priceLabel}{farm.priceSuffix && ` ${farm.priceSuffix}`}</p><span class="hero-inclusions">Planta y transformador incluidos. Camión y rebaño no incluidos.</span></div>
-        <span class="feature-circle"><Icon name="diagonal" size={24}/></span>
-      </a>
-    </div>
+  <section class="home-intro section-wrap">
+    <h1>Activos en venta</h1>
+    <p>Fotos reales, precio claro y trato directo con el vendedor por WhatsApp.</p>
   </section>
-  <div class="value-strip"><span><Icon name="field"/> Tierra e infraestructura</span><span><Icon name="truck"/> Transporte lechero</span><span><Icon name="energy"/> Equipos eléctricos</span><span><Icon name="shop"/> Espacio comercial</span></div>
-  <section id="catalogo" class="catalog-section section-wrap">
-    <div class="catalog-heading"><div><p class="eyebrow">EL CATÁLOGO</p><h2>Cada activo,<br/><em>una oportunidad.</em></h2></div><p>Compare las ofertas. Entre en cada ficha<br class="desktop-only"/> para conocer sus características y condiciones.</p></div>
-    <div class="catalog-controls"><div class="filter-tabs" aria-label="Filtrar por categoría">{categories.map((c,index)=><button type="button" data-filter={c.value} aria-pressed={index===0}>{c.label}</button>)}</div><span class="catalog-count" data-catalog-count>{products.length} ofertas</span></div>
-    <div class="catalog-grid">{products.map((product,index)=><ProductCard product={product} number={index+1}/>)}</div>
-  </section>
-  <section class="farm-editorial">
-    <div class="editorial-media"><Carousel images={farm.images} label="Infraestructura del fundo y fotografías de referencia" variant="editorial" href={productPath(farm)} linkLabel={`Ver detalles de ${farm.shortTitle}`} /></div>
-    <div class="editorial-copy">
-      <p class="eyebrow">MÁS QUE HECTÁREAS</p><h2>Una base de trabajo<br/><em>ya desarrollada.</em></h2>
-      <p>Agua, electricidad, instalaciones y tierra para explorar su siguiente proyecto agrícola, ganadero o acuícola.</p>
-      <p class="farm-pitch">{farm.campaignHeading || farm.tagline}</p>
-      <div class="information-block"><ul>
-        <li>9 pozos y 30 jagüeyes.</li>
-        <li>1 casa principal y 14 viviendas.</li>
-        <li>3 tanques de enfriamiento: 7.000 L de capacidad.</li>
-        <li>Torre de telecomunicaciones y conectividad Wi‑Fi.</li>
-        <li>Cámaras de seguridad con detección de placas, según el propietario.</li>
-      </ul></div>
-      <div class="editorial-facts"><div><strong>1.500 <small>ha</small></strong><span>Superficie declarada</span></div><div><strong>9</strong><span>Pozos inventariados</span></div><div><strong>30</strong><span>Jagüeyes inventariados</span></div></div>
-      <p class="editorial-condition">Planta y transformador incluidos. Camión y rebaño no incluidos.</p>
-      <a href={productPath(farm)} class="text-link">Ver anuncio y detalles del hato <Icon name="arrow"/></a>
+  <section id="catalogo" class="catalog section-wrap" aria-label="Catálogo de activos">
+    <div class="catalog-bar">
+      <div class="filter-tabs" role="group" aria-label="Filtrar por categoría">{categories.map((c,index)=><button type="button" data-filter={c.value} aria-pressed={index===0}>{c.label}</button>)}</div>
+      <span class="catalog-count" data-catalog-count>{products.length} activos disponibles</span>
     </div>
-  </section>
-  <section id="como-consultar" class="how-section section-wrap">
-    <div class="section-heading"><div><p class="eyebrow">DE LA FICHA A LA CONVERSACIÓN</p><h2>El siguiente paso es sencillo.</h2></div><p>Sin registros. Sin formularios.<br/>Una conversación sobre el activo que le interesa.</p></div>
-    <div class="how-grid"><div><span class="step-number">01</span><h3>Explore.</h3><p>Revise imágenes, características, precio y lo que comprende cada oferta.</p></div><div><span class="step-number">02</span><h3>Pregunte.</h3><p>Abra WhatsApp con el activo identificado. Revise el mensaje y envíelo cuando quiera.</p></div><div><span class="step-number">03</span><h3>Conózcalo.</h3><p>Coordine la visita o inspección y confirme los detalles directamente con el vendedor.</p></div></div>
-    <div class="how-bottom"><p>¿Quiere que alguien más lo vea? Puede compartir cada ficha o copiar su enlace.</p><button type="button" data-share class="text-link">Compartir este catálogo <Icon name="share" size={18}/></button></div>
+    <div class="catalog-grid">{products.map((product,index)=><ProductCard product={product} eager={index < 3}/>)}</div>
   </section>
 </BaseLayout>
